@@ -1,4 +1,4 @@
-import 'jquery';
+import 'jQuery'
 
 $(function(){
     alert(1);

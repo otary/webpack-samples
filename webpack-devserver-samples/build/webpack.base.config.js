@@ -13,19 +13,31 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     filename: (pageName) => {
         return path.join(pageName, 'index');
     },
+    // 生成pagemap.json
+    outputPagemap: true,
+    hash: true,
+
+    // 提取公共代码
     commonsChunk: {
         name: 'common',
-        filename: '[name].js'
+        filename: '/assets/js/[name]-[hash].js'
     },
-    requires: ['common']
+
+    // 引入其它chunk
+    // requires: ['base']
 });
 
 module.exports = {
     entry: autoWebPlugin.entry({}),
     output: {
         path: path.resolve(process.cwd(), 'dist'),
-        filename: '[name]/[name].js'
+        filename: '[name]/[name].js',
+
+        // 指定静态资源路径
+        // publicPath: 'https://cdn.cn/',
     },
+
+    // 将外部变量或者模块加载进来
     externals: {
         jquery: 'jQuery'
     },
