@@ -1,7 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-const CommonsChunkPlugin = webpack.optimize.CommonsChunkPlugin;
+const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 
 const pagePath = './src/pages';
@@ -59,6 +60,12 @@ module.exports = {
                 fallback: 'style-loader'
             }),
         }, {
+            test: /\.scss/,
+            loaders: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: ['css-loader', 'sass-loader']
+            })
+        }, {
             test: /\.(js|jsx)$/,
             exclude: /node_modules/,
             use: ['babel-loader']
@@ -100,20 +107,25 @@ module.exports = {
             use: ['vue-loader'],
         }]
     },
-    resolve: {
-        alias: {
-            '@': srcPath,
-            '@assets': path.join(srcPath, 'assets'),
-            '@scss': path.join(srcPath, 'assets', 'scss'),
-            'vue$': 'vue/dist/vue.common.js'
+    resolve:
+        {
+            alias: {
+                '@': srcPath,
+                '@assets': path.join(srcPath, 'assets'),
+                '@scss': path.join(srcPath, 'assets', 'scss'),
+                'vue$': 'vue/dist/vue.common.js'
+            }
+            ,
+            extensions: ['.js', '.vue', '.json', '.css', '.scss']
         }
-    }
     ,
     plugins: [
         autoWebPlugin,
+        new VueLoaderPlugin(),
         new ExtractTextPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`
-        })
+        }),
+        new CleanWebpackPlugin(),
     ],
     devServer: {
         //contentBase: pagePath
