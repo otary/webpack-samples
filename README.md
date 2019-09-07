@@ -39,3 +39,19 @@
  | | |-- index.html
  
 ```
+
+### 运行
+
+$ npm run server
+
+> 查看webpack-dev-server服务器上的资源文件
+
+http://localhost:9999/webpack-dev-server
+
+> 访问页面
+
+http://localhost:9999/views/home/index.html   
+http://localhost:9999/views/home
+
+http://localhost:9999/views/login/index.html    
+http://localhost:9999/views/login
