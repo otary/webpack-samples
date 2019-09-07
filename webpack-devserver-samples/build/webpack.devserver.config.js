@@ -15,7 +15,6 @@ const devServerConfig = {
         port: 9999,
 
         // 热替换
-        hot: true,
         inline: true,
         watchOptions: {
             aggregateTimeout: 300,
@@ -27,7 +26,13 @@ const devServerConfig = {
         compress: true,
 
         // 定义头部信息
-        headers: {"X-Custom-Header": "yes"},
+        headers: {"Access-Control-Allow-Origin": "*"},
+
+        // 编译完成后打开浏览器
+        // open: true,
+
+        // 显示编译进度
+        progress: true
 
         // 重定向
         /*proxy: {
