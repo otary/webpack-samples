@@ -4,11 +4,13 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
+const DllReferencePlugin = webpack.DllReferencePlugin;
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
 const distPath = path.resolve(process.cwd(), 'dist');
 const assetsPath = path.join(srcPath, 'assets');
+const distDllPath = path.join(distPath, 'dll');
 
 const autoWebPlugin = new AutoWebPlugin(pagePath, {
     template: (pageName) => {
@@ -27,14 +29,16 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
         name: 'vendor',
         minChunks: 2,
         filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
-    }
+    },
 
     // 引入其它chunk
-    //requires: ['vendor']
+    requires: ['vendor_dll']
 });
 
 module.exports = {
-    entry: autoWebPlugin.entry({}),
+    entry: autoWebPlugin.entry({
+        vendor_dll: path.join(distDllPath, 'vendor.dll.js')
+    }),
     output: {
         path: distPath,
         filename: 'assets/[name]/js/[name].js',
@@ -59,7 +63,7 @@ module.exports = {
                     loader: 'css-loader'
                 }],
                 fallback: 'style-loader'
-            }),
+            })
         }, {
             test: /\.scss/,
             loaders: ExtractTextPlugin.extract({
@@ -114,6 +118,7 @@ module.exports = {
                 '@': srcPath,
                 '@assets': assetsPath,
                 '@scss': path.join(assetsPath, 'scss'),
+                '@dll': distDllPath,
                 'vue$': 'vue/dist/vue.common.js'
             }
             ,
@@ -126,6 +131,10 @@ module.exports = {
         new VueLoaderPlugin(),
         new ExtractTextPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`
+        }),
+        new DllReferencePlugin({
+            manifest: require(path.join(distDllPath, 'vendor.manifest.json')),
+            name: "[name].test.js"
         })
     ],
     devServer: {

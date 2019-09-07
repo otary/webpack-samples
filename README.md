@@ -2,7 +2,7 @@
 
 
 - [webpack-devserver-samples](./webpack-devserver-samples): 使用webpack-dev-server服务器
-
+- [webpack-optimized-samples](./webpack-optimized-samples): 优化版
 
 
 ### 目录结构
@@ -55,3 +55,7 @@ http://localhost:9999/views/home
 
 http://localhost:9999/views/login/index.html    
 http://localhost:9999/views/login
+
+- vue + element-ui示例
+http://localhost:9999/views/vue-server/index.html    
+http://localhost:9999/views/vue-server
