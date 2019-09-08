@@ -21,10 +21,10 @@
     }
 </script>
 
-<!--<style lang="scss" scoped>
+<style lang="scss" scoped>
     .m-main {
         font-family: Helvetica, sans-serif;
         text-align: center;
         height: 100vh;
     }
-</style>-->
+</style>

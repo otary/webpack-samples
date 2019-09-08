@@ -7,7 +7,7 @@
     "dev": "webpack-dev-server --config build/webpack.base.config.js",
     "build:all": "webpack --config build/webpack.dll.config.js && webpack --config build/webpack.base.config.js",
     "build": "webpack --config build/webpack.base.config.js",
-    "dll": "webpack --config build/webpack.dll.config.js",
+    "build:dll": "webpack --config build/webpack.dll.config.js",
     "server": "webpack-dev-server --config build/webpack.devserver.config.js"
   },
   "repository": {
@@ -29,7 +29,6 @@
     "expose-loader": "^0.7.5",
     "file-loader": "^3.0.1",
     "jquery": "^3.4.1",
-    "layui-layer": "^1.0.9",
     "node-sass": "^4.12.0",
     "popper.js": "^1.15.0",
     "postcss-loader": "^3.0.0",

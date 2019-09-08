@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const {CleanWebpackPlugin} = require("clean-webpack-plugin");
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
@@ -55,18 +55,18 @@ module.exports = {
             }]
         }, {
             test: /\.css$/,
-            loaders: ExtractTextPlugin.extract({
-                use: [{
-                    loader: 'css-loader'
-                }],
-                fallback: 'style-loader'
-            }),
+            use: [{
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                    // hmr: process.env.NODE_ENV === 'development',
+                },
+            }, 'css-loader']
         }, {
             test: /\.scss/,
-            loaders: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: ['css-loader', 'sass-loader']
-            })
+            use: [{
+                loader: MiniCssExtractPlugin.loader,
+                options: {},
+            }, 'css-loader', 'sass-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -75,7 +75,6 @@ module.exports = {
 
             // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
             exclude: path.resolve(__dirname, 'node_modules')
-
         }, {
             test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
             use: ['file-loader']
@@ -124,14 +123,37 @@ module.exports = {
         },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'async',
+            minSize: 300,
+            maxSize: 0,
+            minChunks: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
+            automaticNameDelimiter: '~',
+            name: true,
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    priority: -10
+                },
+                default: {
+                    minChunks: 2,
+                    priority: -20,
+                    reuseExistingChunk: true
+                }
+            }
+        }
+    },
     plugins: [
         autoWebPlugin,
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
-        new ExtractTextPlugin({
-            filename: `assets/[name]/css/[name]_[contenthash:8].css`
+        new MiniCssExtractPlugin({
+            filename: `assets/[name]/css/[name]_[contenthash:8].css`,
+            ignoreOrder: false
         }),
-        //使用ParallelUglifyPlugin 并行压缩输出的JavaScript代码
         new ParallelUglifyPlugin({
             uglifyJS: {
                 output: {
@@ -141,14 +163,14 @@ module.exports = {
                     comments: false,
                 },
                 compress: {
-                    warnings: false,
                     //删除所有console语句，可以兼容IE浏览器
                     drop_console: true,
                     //内嵌已定义但是只用到一次的变量
                     collapse_vars: true
                 }
             }
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {
         contentBase: pagePath

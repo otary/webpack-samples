@@ -40,6 +40,9 @@
  
 ```
 
+---
+## webpack-devserver-samples
+
 ### 运行
 
 $ npm run server
@@ -59,3 +62,14 @@ http://localhost:9999/views/login
 - vue + element-ui示例
 http://localhost:9999/views/vue-server/index.html    
 http://localhost:9999/views/vue-server
+
+---
+## webpack-optimized-samples
+
+
+
+### 运行
+
+> 生成dll文件并编译项目
+
+$ npm run build:all

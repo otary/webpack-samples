@@ -4,7 +4,7 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
-const DllReferencePlugin = webpack.DllReferencePlugin;
+const AutoDllPlugin = require('autodll-webpack-plugin');
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
@@ -25,19 +25,22 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     hash: true,
 
     // 提取公共代码
-    commonsChunk: {
-        name: 'vendor',
-        minChunks: 2,
-        filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
-    },
+    /* commonsChunk: {
+         name: 'vendor',
+         minChunks: 2,
+         filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
+     },*/
+
+    //preEntrys: [path.join(distDllPath, 'vendor.dll.css')],
 
     // 引入其它chunk
-    requires: ['vendor_dll']
+    requires: ['vendor_dll', 'vendor_css_dll']
 });
 
 module.exports = {
     entry: autoWebPlugin.entry({
-        vendor_dll: path.join(distDllPath, 'vendor.dll.js')
+        vendor_dll: [path.join(distDllPath, 'vendor.dll.js')],
+        vendor_css_dll: [path.join(distDllPath, 'vendor.dll.css')]
     }),
     output: {
         path: distPath,
@@ -69,6 +72,12 @@ module.exports = {
             loaders: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
                 use: ['css-loader', 'sass-loader']
+            })
+        }, {
+            test: /\.less$/,
+            use: ExtractTextPlugin.extract({
+                fallback: "style-loader",
+                use: ['css-loader', 'less-loader']
             })
         }, {
             test: /\.(js|jsx)$/,
@@ -127,15 +136,21 @@ module.exports = {
     ,
     plugins: [
         autoWebPlugin,
-        new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new ExtractTextPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`
         }),
-        new DllReferencePlugin({
-            manifest: require(path.join(distDllPath, 'vendor.manifest.json')),
-            name: "[name].test.js"
+        new AutoDllPlugin({
+            inject: true, 
+            filename: '[name].dll.js',
+            entry: {
+                vendor: [
+                    'jquery',
+                    'bootstrap'
+                ]
+            }
         })
+
     ],
     devServer: {
         //contentBase: pagePath
