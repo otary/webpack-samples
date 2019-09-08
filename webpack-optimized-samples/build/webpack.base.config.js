@@ -4,7 +4,9 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
-const AutoDllPlugin = require('autodll-webpack-plugin');
+//const AutoDllPlugin = require('autodll-webpack-plugin');
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
+
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
@@ -140,7 +142,7 @@ module.exports = {
         new ExtractTextPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`
         }),
-        new AutoDllPlugin({
+        /*new AutoDllPlugin({
             inject: true, 
             filename: '[name].dll.js',
             entry: {
@@ -148,6 +150,22 @@ module.exports = {
                     'jquery',
                     'bootstrap'
                 ]
+            }
+        }),*/
+        new ParallelUglifyPlugin({
+            uglifyJS: {
+                output: {
+                    //最紧凑的输出
+                    beautify: false,
+                    //删除所有注释
+                    comments: false,
+                },
+                compress: {
+                    //删除所有console语句，可以兼容IE浏览器
+                    drop_console: true,
+                    //内嵌已定义但是只用到一次的变量
+                    collapse_vars: true
+                }
             }
         })
 

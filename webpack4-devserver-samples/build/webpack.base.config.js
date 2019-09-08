@@ -23,18 +23,12 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     outputPagemap: true,
     hash: true,
 
-    // 提取公共代码
-    commonsChunk: {
-        name: 'vendor',
-        minChunks: 2,
-        filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
-    }
-
     // 引入其它chunk
-    //requires: ['vendor']
+    requires: ['vendor']
 });
 
 module.exports = {
+    mode: 'development',
     entry: autoWebPlugin.entry({}),
     output: {
         path: distPath,
@@ -134,18 +128,20 @@ module.exports = {
             automaticNameDelimiter: '~',
             name: true,
             cacheGroups: {
-                vendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10
-                },
                 default: {
                     minChunks: 2,
                     priority: -20,
                     reuseExistingChunk: true
+                },
+                vendor: {
+                    name: "vendor",
+                    chunks: "initial",
+                    minChunks: 2
                 }
             }
         }
     },
+
     plugins: [
         autoWebPlugin,
         new CleanWebpackPlugin(),

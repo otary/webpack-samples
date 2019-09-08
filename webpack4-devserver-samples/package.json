@@ -43,7 +43,7 @@
     "web-webpack-plugin": "^4.6.6",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.8",
-    "webpack-dev-server": "^2.11.5",
+    "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.2",
     "webpack-parallel-uglify-plugin": "^1.1.2"
   }
