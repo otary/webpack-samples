@@ -5,6 +5,10 @@
 - [webpack-optimized-samples](./webpack-optimized-samples): 优化版
 
 
+- [webpack-single-samples](./webpack-single-samples)：单项目示例
+  - [webpack4-single-devserver-samples](./webpack-single-samples/webpack4-single-devserver-sample): 单项目
+  
+
 ### 目录结构
 
 ```
