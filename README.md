@@ -19,10 +19,10 @@
  | |-- scss
  |-- pages   // 页面
  | |-- [模块1]
- | | |-- index.js    // 入口文件
+ | | |-- main.js    // 入口文件
  | | |-- template.html  // 模版文件
  | |-- [模块2]
- | | |-- index.js
+ | | |-- main.js
  | | |-- template.html 
 
 -- dist

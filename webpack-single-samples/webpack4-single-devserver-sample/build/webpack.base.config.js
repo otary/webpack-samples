@@ -14,10 +14,7 @@ const assetsPath = path.join(srcPath, 'assets');
 module.exports = {
     mode: 'development',
     entry: {
-        index: './src/index.js',
-        home: './src/assets/js/home.js',
-        login: './src/assets/js/login.js',
-        appStat: './src/assets/js/appStat.js'
+        main: './src/main.js'
     },
     output: {
         path: distPath,
@@ -112,7 +109,7 @@ module.exports = {
     },
     optimization: {
         splitChunks: {
-            chunks: 'async',
+            chunks: 'all',
             minSize: 300,
             maxSize: 0,
             minChunks: 1,
@@ -129,6 +126,7 @@ module.exports = {
                 vendor: {
                     name: "vendor",
                     chunks: "all",
+                    test: /[\\/]node_modules[\\/]/,
                     minChunks: 2
                 }
             }
@@ -138,15 +136,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/template.html',
             filename: 'template.html',
-            chunks: 'vendor',
-            // excludeChunks: [],
+            chunks: 'all'
         }),
-        new HtmlWebpackPlugin({
-            template: 'src/index.html',
-            filename: 'index.html',
-            chunks: 'vendor',
-            // excludeChunks: [],
-        }),
+
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
