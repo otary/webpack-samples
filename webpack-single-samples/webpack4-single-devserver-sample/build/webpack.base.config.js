@@ -7,8 +7,9 @@ const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const srcPath = path.resolve(process.cwd(), 'src');
-const distPath = path.resolve(process.cwd(), 'dist');
+const rootPath = path.resolve(process.cwd());
+const srcPath = path.resolve(rootPath, 'src');
+const distPath = path.resolve(rootPath, 'dist');
 const assetsPath = path.join(srcPath, 'assets');
 
 module.exports = {
@@ -107,6 +108,7 @@ module.exports = {
         },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
+
     optimization: {
         splitChunks: {
             chunks: 'all',
@@ -135,10 +137,10 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'src/template.html',
-            filename: 'template.html',
-            chunks: 'all'
+            filename: 'index.html',
+            chunks: 'all',
+            favicon: path.join(assetsPath, 'icon.ico')
         }),
-
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({

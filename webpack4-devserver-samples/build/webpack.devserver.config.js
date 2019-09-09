@@ -37,15 +37,16 @@ const devServerConfig = {
         // open: true,
 
         // 显示编译进度
-        progress: true
+        progress: true,
 
         // 重定向
-        /*proxy: {
+        proxy: {
+            // 代理到后端服务接口
             "/api": {
                 target: "http://localhost:3000",
                 pathRewrite: {"^/api": ""}
             }
-        }*/
+        }
 
 
     }

@@ -5,6 +5,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
@@ -54,19 +55,25 @@ module.exports = {
                 options: '$'
             }]
         }, {
-            test: /\.css$/,
-            loaders: ExtractTextPlugin.extract({
-                use: [{
-                    loader: 'css-loader'
-                }],
-                fallback: 'style-loader'
-            }),
-        }, {
-            test: /\.scss/,
-            loaders: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: ['css-loader', 'sass-loader']
-            })
+            test: /\.(sa|sc|c)ss$/,
+            use: [{
+                loader: ExtractTextPlugin.extract({
+                    use: [{
+                        loader: 'css-loader'
+                    }],
+                    fallback: 'style-loader'
+                })
+            }, 'css-loader', {
+                loader: 'postcss-loader',
+                options: {
+                    plugins: [
+                        require('postcss-import')(),
+                        require('autoprefixer')({
+                            browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
+                        })
+                    ]
+                }
+            }, 'sass-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -74,30 +81,24 @@ module.exports = {
             }],
 
             // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
-            exclude: path.resolve(__dirname, 'node_modules')
-
+            exclude: /node_modules/
         }, {
-            test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
+            test: /\.(gif|png|jpe?g|pdf)$/,
             use: ['file-loader']
         }, {
-            test: /\eot(\?v=\d+\\d+\\d+)?$/,
-            use: ['file-loader']
+            test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+            loader: 'url-loader',
+            options: {
+                limit: 10000,
+                name: 'assets/media/[name].[hash:7].[ext]'
+            }
         }, {
-            test: /\.(woff|woff2)$/,
+            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
             use: [{
                 loader: 'url-loader',
                 options: {
-                    prefix: 'font/',
-                    limit: 5000
-                }
-            }]
-        }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    mimetype: 'application/octet-stream'
+                    name: 'assets/fonts/[name].[hash:8].[ext]',
+                    limit: 10000
                 }
             }]
         }, {
@@ -112,10 +113,12 @@ module.exports = {
         }, {
             test: /\.vue$/,
             use: ['vue-loader'],
-            exclude: path.resolve(__dirname, 'node_modules')
+            exclude: /node_modules/
         }]
     },
     resolve: {
+        // 寻找模块的根目录，默认以node_modules为根目录
+        modules: ['node_modules'],
         alias: {
             '@': srcPath,
             '@assets': assetsPath,
@@ -148,7 +151,10 @@ module.exports = {
                     collapse_vars: true
                 }
             }
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin(),
+        //压缩css插件配置
+        new OptimizeCssAssetsWebpackPlugin()
     ],
     devServer: {
         contentBase: pagePath
