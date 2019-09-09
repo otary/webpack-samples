@@ -99,7 +99,7 @@ module.exports = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    mimetype: 'image/svg+xml'
+                    mimeType: 'image/svg+xml'
                 }
             }]
         }, {
