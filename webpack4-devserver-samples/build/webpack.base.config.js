@@ -25,7 +25,7 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     hash: true,
 
     // 引入其它chunk
-    requires: ['vendor']
+    requires: ['runtime', 'vendor']
 });
 
 module.exports = {
@@ -73,7 +73,7 @@ module.exports = {
             }],
 
             // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
-            exclude: path.resolve(__dirname, 'node_modules')
+            exclude: /node_modules/
         }, {
             test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
             use: ['file-loader']
@@ -110,7 +110,7 @@ module.exports = {
         }, {
             test: /\.vue$/,
             use: ['vue-loader'],
-            exclude: path.resolve(__dirname, 'node_modules')
+            exclude: /node_modules/
         }]
     },
     resolve: {
@@ -123,12 +123,12 @@ module.exports = {
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
     optimization: {
-        minimizer: [new OptimizeCssAssetsWebpackPlugin({})],
-
+        runtimeChunk: {
+            name: 'runtime'
+        },
         splitChunks: {
-            chunks: 'async',
+            chunks: 'all',
             minSize: 300,
-            maxSize: 0,
             minChunks: 1,
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
@@ -142,7 +142,8 @@ module.exports = {
                 },
                 vendor: {
                     name: "vendor",
-                    chunks: "initial",
+                    test: /[\\/]node_modules[\\/]/,
+                    chunks: "all",
                     minChunks: 2
                 }
             }
@@ -151,7 +152,7 @@ module.exports = {
 
     plugins: [
         autoWebPlugin,
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`,
@@ -175,7 +176,7 @@ module.exports = {
         }),
         new webpack.HotModuleReplacementPlugin(),
         //压缩css插件配置
-        // new OptimizeCssAssetsWebpackPlugin()
+        new OptimizeCssAssetsWebpackPlugin()
     ],
     devServer: {
         contentBase: pagePath
