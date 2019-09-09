@@ -13,7 +13,12 @@ const assetsPath = path.join(srcPath, 'assets');
 
 module.exports = {
     mode: 'development',
-    entry: './src/index.js',
+    entry: {
+        index: './src/index.js',
+        home: './src/assets/js/home.js',
+        login: './src/assets/js/login.js',
+        appStat: './src/assets/js/appStat.js'
+    },
     output: {
         path: distPath,
         filename: 'assets/js/[name].js',
@@ -111,8 +116,8 @@ module.exports = {
             minSize: 300,
             maxSize: 0,
             minChunks: 1,
-            maxAsyncRequests: 5,
-            maxInitialRequests: 3,
+            maxAsyncRequests: 1,
+            maxInitialRequests: 1,
             automaticNameDelimiter: '~',
             name: true,
             cacheGroups: {
@@ -123,7 +128,7 @@ module.exports = {
                 },
                 vendor: {
                     name: "vendor",
-                    chunks: "initial",
+                    chunks: "all",
                     minChunks: 2
                 }
             }
@@ -132,6 +137,12 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: 'src/template.html',
+            filename: 'template.html',
+            chunks: 'vendor',
+            // excludeChunks: [],
+        }),
+        new HtmlWebpackPlugin({
+            template: 'src/index.html',
             filename: 'index.html',
             chunks: 'vendor',
             // excludeChunks: [],

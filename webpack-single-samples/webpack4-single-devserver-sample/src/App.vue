@@ -25,6 +25,6 @@
     .m-main {
         font-family: Helvetica, sans-serif;
         text-align: center;
-        height: 100vh;
+        height: calc(100%);
     }
 </style>

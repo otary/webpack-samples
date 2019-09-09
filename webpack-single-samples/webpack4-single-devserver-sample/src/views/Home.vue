@@ -5,6 +5,8 @@
 </template>
 
 <script>
+    import '@assets/js/home.js';
+
     export default {
         name: "Home"
     }
