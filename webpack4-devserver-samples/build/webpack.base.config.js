@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
@@ -48,19 +49,23 @@ module.exports = {
                 options: '$'
             }]
         }, {
-            test: /\.css$/,
+            test: /\.(sa|sc|c)ss$/,
             use: [{
                 loader: MiniCssExtractPlugin.loader,
                 options: {
                     // hmr: process.env.NODE_ENV === 'development',
                 },
-            }, 'css-loader']
-        }, {
-            test: /\.scss/,
-            use: [{
-                loader: MiniCssExtractPlugin.loader,
-                options: {},
-            }, 'css-loader', 'sass-loader']
+            }, 'css-loader', {
+                loader: 'postcss-loader',
+                options: {
+                    plugins: [
+                        require('postcss-import')(),
+                        require('autoprefixer')({
+                            browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
+                        })
+                    ]
+                }
+            }, 'sass-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -118,6 +123,8 @@ module.exports = {
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
     optimization: {
+        minimizer: [new OptimizeCssAssetsWebpackPlugin({})],
+
         splitChunks: {
             chunks: 'async',
             minSize: 300,
@@ -166,7 +173,9 @@ module.exports = {
                 }
             }
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        //压缩css插件配置
+        // new OptimizeCssAssetsWebpackPlugin()
     ],
     devServer: {
         contentBase: pagePath
