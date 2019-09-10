@@ -28,7 +28,7 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     commonsChunk: {
         name: 'vendor',
         minChunks: 2,
-        filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
+        filename: 'assets/[name]/js/[name].js'
     }
 
     // 引入其它chunk
@@ -56,24 +56,22 @@ module.exports = {
             }]
         }, {
             test: /\.(sa|sc|c)ss$/,
-            use: [{
-                loader: ExtractTextPlugin.extract({
-                    use: [{
-                        loader: 'css-loader'
-                    }],
-                    fallback: 'style-loader'
-                })
-            }, 'css-loader', {
-                loader: 'postcss-loader',
-                options: {
-                    plugins: [
-                        require('postcss-import')(),
-                        require('autoprefixer')({
-                            browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
-                        })
-                    ]
-                }
-            }, 'sass-loader']
+            loaders: ExtractTextPlugin.extract({
+                use: [{
+                    loader: 'css-loader'
+                }, {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: [
+                            require('postcss-import')(),
+                            require('autoprefixer')({
+                                browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
+                            })
+                        ]
+                    }
+                }, 'sass-loader'],
+                fallback: 'style-loader'
+            })
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -143,8 +141,9 @@ module.exports = {
                     //删除所有注释
                     comments: false,
                 },
+                // 在 UglifyJS 删除没有用到的代码时不输出警告
+                warnings: false,
                 compress: {
-                    warnings: false,
                     //删除所有console语句，可以兼容IE浏览器
                     drop_console: true,
                     //内嵌已定义但是只用到一次的变量

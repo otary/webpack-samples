@@ -6,10 +6,10 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
-
+const rootPath = path.resolve(process.cwd());
 const pagePath = './src/pages';
-const srcPath = path.resolve(process.cwd(), 'src');
-const distPath = path.resolve(process.cwd(), 'dist');
+const srcPath = path.resolve(rootPath, 'src');
+const distPath = path.resolve(rootPath, 'dist');
 const assetsPath = path.join(srcPath, 'assets');
 
 const autoWebPlugin = new AutoWebPlugin(pagePath, {
@@ -55,17 +55,7 @@ module.exports = {
                 options: {
                     // hmr: process.env.NODE_ENV === 'development',
                 },
-            }, 'css-loader', {
-                loader: 'postcss-loader',
-                options: {
-                    plugins: [
-                        require('postcss-import')(),
-                        require('autoprefixer')({
-                            browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
-                        })
-                    ]
-                }
-            }, 'sass-loader']
+            }, 'css-loader', 'postcss-loader', 'sass-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -148,6 +138,14 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.BannerPlugin({
+            banner: 'author:chenzw, github:https://github.com/otary/webpack-samples'
+        }),
+        new webpack.ProvidePlugin({
+            'window.jQuery': 'jquery',
+            $: 'jquery',
+            Vue: ['vue/dist/vue.esm.js', 'default']
+        }),
         autoWebPlugin,
         // new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
@@ -155,14 +153,14 @@ module.exports = {
             filename: `assets/[name]/css/[name]_[contenthash:8].css`,
             ignoreOrder: false
         }),
-       //使用ParallelUglifyPlugin 并行压缩输出的JavaScript代码
+        //使用ParallelUglifyPlugin 并行压缩输出的JavaScript代码
         new ParallelUglifyPlugin({
             uglifyJS: {
                 output: {
                     //最紧凑的输出
                     beautify: false,
                     //删除所有注释
-                    comments: false,
+                    comments: true
                 },
                 compress: {
                     //删除所有console语句，可以兼容IE浏览器

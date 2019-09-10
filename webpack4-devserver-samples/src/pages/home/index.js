@@ -1,5 +1,5 @@
 // 引入js资源
-import 'jquery';
+// import 'jquery';
 import 'bootstrap';
 import '@assets/js/base.js';
 
@@ -7,7 +7,8 @@ import '@assets/js/base.js';
 import '@assets/css/reset.css';
 import 'bootstrap/dist/css/bootstrap.css';
 
-
+alert($);
+alert(Vue);
 $(function () {
 
 });

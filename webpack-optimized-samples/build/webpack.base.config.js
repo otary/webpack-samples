@@ -6,6 +6,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 //const AutoDllPlugin = require('autodll-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const HappyPack = require('happypack');
 
 
@@ -63,22 +64,22 @@ module.exports = {
                 options: '$'
             }]
         }, {
-            test: /\.css$/,
-            use: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: ['css-loader']
-            })
-        }, {
-            test: /\.scss/,
+            test: /\.(sa|sc|c)ss$/,
             loaders: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: ['css-loader', 'sass-loader']
-            })
-        }, {
-            test: /\.less$/,
-            use: ExtractTextPlugin.extract({
-                fallback: "style-loader",
-                use: ['css-loader', 'less-loader']
+                use: [{
+                    loader: 'css-loader'
+                }, {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: [
+                            require('postcss-import')(),
+                            require('autoprefixer')({
+                                browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
+                            })
+                        ]
+                    }
+                }, 'sass-loader'],
+                fallback: 'style-loader'
             })
         }, {
             test: /\.(js|jsx)$/,
@@ -89,24 +90,19 @@ module.exports = {
             test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
             use: ['file-loader']
         }, {
-            test: /\eot(\?v=\d+\\d+\\d+)?$/,
-            use: ['file-loader']
+            test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+            loader: 'url-loader',
+            options: {
+                limit: 10000,
+                name: 'assets/media/[name].[hash:7].[ext]'
+            }
         }, {
-            test: /\.(woff|woff2)$/,
+            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
             use: [{
                 loader: 'url-loader',
                 options: {
-                    prefix: 'font/',
-                    limit: 5000
-                }
-            }]
-        }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    mimetype: 'application/octet-stream'
+                    name: 'assets/fonts/[name].[hash:8].[ext]',
+                    limit: 10000
                 }
             }]
         }, {
@@ -115,12 +111,13 @@ module.exports = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    mimetype: 'image/svg+xml'
+                    mimeType: 'image/svg+xml'
                 }
             }]
         }, {
             test: /\.vue$/,
-            use: ['vue-loader']
+            use: ['vue-loader'],
+            exclude: /node_modules/
         }]
     },
     // 输出构建性能信息（用于分析说明原因导致构建性能不佳）
@@ -185,10 +182,12 @@ module.exports = {
                     collapse_vars: true
                 }
             }
-        })
-
+        }),
+        new webpack.HotModuleReplacementPlugin(),
+        //压缩css插件配置
+        new OptimizeCssAssetsWebpackPlugin()
     ],
     devServer: {
-        //contentBase: pagePath
+        contentBase: pagePath
     }
 }

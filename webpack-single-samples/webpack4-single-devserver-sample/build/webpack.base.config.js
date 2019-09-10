@@ -61,27 +61,22 @@ module.exports = {
             // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
             exclude: /node_modules/
         }, {
-            test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
+            test: /\.(gif|png|jpe?g|pdf)$/,
             use: ['file-loader']
         }, {
-            test: /\eot(\?v=\d+\\d+\\d+)?$/,
-            use: ['file-loader']
+            test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
+            loader: 'url-loader',
+            options: {
+                limit: 10000,
+                name: 'assets/media/[name].[hash:7].[ext]'
+            }
         }, {
-            test: /\.(woff|woff2)$/,
+            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
             use: [{
                 loader: 'url-loader',
                 options: {
-                    prefix: 'font/',
-                    limit: 5000
-                }
-            }]
-        }, {
-            test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    limit: 10000,
-                    mimetype: 'application/octet-stream'
+                    name: 'assets/fonts/[name].[hash:8].[ext]',
+                    limit: 10000
                 }
             }]
         }, {
@@ -90,7 +85,7 @@ module.exports = {
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    mimetype: 'image/svg+xml'
+                    mimeType: 'image/svg+xml'
                 }
             }]
         }, {
@@ -100,6 +95,8 @@ module.exports = {
         }]
     },
     resolve: {
+        // 寻找模块的根目录，默认以node_modules为根目录
+        modules: ['node_modules'],
         alias: {
             '@': srcPath,
             '@assets': assetsPath,
@@ -115,8 +112,8 @@ module.exports = {
             minSize: 300,
             maxSize: 0,
             minChunks: 1,
-            maxAsyncRequests: 1,
-            maxInitialRequests: 1,
+            maxAsyncRequests: 5,
+            maxInitialRequests: 3,
             automaticNameDelimiter: '~',
             name: true,
             cacheGroups: {
@@ -127,8 +124,8 @@ module.exports = {
                 },
                 vendor: {
                     name: "vendor",
-                    chunks: "all",
                     test: /[\\/]node_modules[\\/]/,
+                    chunks: "all",
                     minChunks: 2
                 }
             }
@@ -139,7 +136,7 @@ module.exports = {
             template: 'src/template.html',
             filename: 'index.html',
             chunks: 'all',
-            favicon: path.join(assetsPath, 'icon.ico')
+            favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
@@ -147,6 +144,7 @@ module.exports = {
             filename: `assets/css/[name]_[contenthash:8].css`,
             ignoreOrder: false
         }),
+        //使用ParallelUglifyPlugin 并行压缩输出的JavaScript代码
         new ParallelUglifyPlugin({
             uglifyJS: {
                 output: {
