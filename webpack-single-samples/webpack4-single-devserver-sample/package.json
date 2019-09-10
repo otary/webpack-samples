@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server --config build/webpack.base.config.js",
     "build": "webpack --config build/webpack.base.config.js",
+    "build:dll": "webpack --config build/webpack.dll.config.js",
     "server": "webpack-dev-server --config build/webpack.devserver.config.js"
   },
   "repository": {
@@ -38,6 +39,7 @@
     "popper.js": "^1.15.0",
     "postcss-import": "^12.0.1",
     "postcss-loader": "^3.0.0",
+    "postcss-url": "^8.0.0",
     "sass-loader": "^7.3.1",
     "style-loader": "^0.23.1",
     "url-loader": "^2.1.0",

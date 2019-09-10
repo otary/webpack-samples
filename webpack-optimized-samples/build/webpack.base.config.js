@@ -4,11 +4,10 @@ const {CleanWebpackPlugin} = require("clean-webpack-plugin");
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
-//const AutoDllPlugin = require('autodll-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
 const HappyPack = require('happypack');
-
 
 const pagePath = './src/pages';
 const srcPath = path.resolve(process.cwd(), 'src');
@@ -29,16 +28,14 @@ const autoWebPlugin = new AutoWebPlugin(pagePath, {
     hash: true,
 
     // 提取公共代码
-    commonsChunk: {
+    /*commonsChunk: {
         name: 'vendor',
         minChunks: 2,
-        filename: 'assets/[name]/js/[name]-[chunkhash:8].js'
-    },
-
-    //preEntrys: [path.join(distDllPath, 'vendor.dll.css')],
+        filename: 'assets/[name]/js/[name]-[hash:8].js'
+    },*/
 
     // 引入其它chunk
-    //requires: ['vendor_dll', 'vendor_css_dll']
+    //requires: ['vendor_dll']
 });
 
 module.exports = {
@@ -66,19 +63,7 @@ module.exports = {
         }, {
             test: /\.(sa|sc|c)ss$/,
             loaders: ExtractTextPlugin.extract({
-                use: [{
-                    loader: 'css-loader'
-                }, {
-                    loader: 'postcss-loader',
-                    options: {
-                        plugins: [
-                            require('postcss-import')(),
-                            require('autoprefixer')({
-                                browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
-                            })
-                        ]
-                    }
-                }, 'sass-loader'],
+                use: ['css-loader', 'postcss-loader', 'sass-loader'],
                 fallback: 'style-loader'
             })
         }, {
@@ -87,7 +72,7 @@ module.exports = {
             // 使用 HappyPack 加速构建
             use: ['happypack/loader?id=babel'],
         }, {
-            test: /\.(gif|png|jpe?g|eot|woff|ttf|svg|pdf)$/,
+            test: /\.(gif|png|jpe?g|pdf)$/,
             use: ['file-loader']
         }, {
             test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
@@ -139,26 +124,18 @@ module.exports = {
             '@scss': path.join(assetsPath, 'scss'),
             '@dll': distDllPath,
             'vue$': 'vue/dist/vue.common.js'
-        }
-        ,
+        },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
     plugins: [
         autoWebPlugin,
         new VueLoaderPlugin(),
         new ExtractTextPlugin({
-            filename: `assets/[name]/css/[name]_[contenthash:8].css`
+            filename: `assets/[name]/css/[name]_[hash:8].css`
         }),
-        /*new AutoDllPlugin({
-            inject: true,
-            filename: '[name].dll.js',
-            entry: {
-                vendor: [
-                    'jquery',
-                    'bootstrap'
-                ]
-            }
-        }),*/
+        new DllReferencePlugin({
+            manifest: require(path.join(distDllPath, 'vendor_dll.manifest.json'))
+        }),
         // 使用 HappyPack 加速构建
         new HappyPack({
             id: 'babel',

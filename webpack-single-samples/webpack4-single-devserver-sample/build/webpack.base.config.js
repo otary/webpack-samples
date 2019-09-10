@@ -141,6 +141,9 @@ module.exports = {
             chunks: 'all',
             favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
+        new DllReferencePlugin({
+            manifest: require(path.join(distDllPath, 'vendor_dll.manifest.json'))
+        }),
         new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({

@@ -108,7 +108,7 @@ module.exports = {
         },
         splitChunks: {
             chunks: 'all',
-            minSize: 300,
+            minSize: 3000,
             minChunks: 1,
             maxAsyncRequests: 5,
             maxInitialRequests: 3,
@@ -142,6 +142,7 @@ module.exports = {
         autoWebPlugin,
         // new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
+        // 提取CSS文件
         new MiniCssExtractPlugin({
             filename: `assets/[name]/css/[name]_[contenthash:8].css`,
             ignoreOrder: false

@@ -1,5 +1,5 @@
 /**
- * DLLPlugin示例
+ * DLLPlugin配置
  *
  * @author chenzw
  */
@@ -7,7 +7,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const DllPlugin = webpack.DllPlugin;
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const dllLibraryName = '_dll_[name]';
 const distPath = path.resolve(process.cwd(), 'dist');
@@ -30,10 +30,12 @@ module.exports = {
         rules: [
             {
                 test: /\.(sa|sc|c)ss$/,
-                loaders: ExtractTextPlugin.extract({
-                    use: ['css-loader', 'postcss-loader', 'sass-loader'],
-                    fallback: 'style-loader'
-                })
+                use: [{
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        // hmr: process.env.NODE_ENV === 'development',
+                    },
+                }, 'css-loader', 'postcss-loader', 'sass-loader']
             }, {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
@@ -63,8 +65,10 @@ module.exports = {
         ]
     },
     plugins: [
-        new ExtractTextPlugin({
-            filename: '[name].dll.css'
+        // 提取CSS文件
+        new MiniCssExtractPlugin({
+            filename: `[name].dll.css`,
+            ignoreOrder: false
         }),
         new DllPlugin({
             name: dllLibraryName,

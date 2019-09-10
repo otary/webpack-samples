@@ -57,19 +57,7 @@ module.exports = {
         }, {
             test: /\.(sa|sc|c)ss$/,
             loaders: ExtractTextPlugin.extract({
-                use: [{
-                    loader: 'css-loader'
-                }, {
-                    loader: 'postcss-loader',
-                    options: {
-                        plugins: [
-                            require('postcss-import')(),
-                            require('autoprefixer')({
-                                browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
-                            })
-                        ]
-                    }
-                }, 'sass-loader'],
+                use: ['css-loader', 'postcss-loader', 'sass-loader'],
                 fallback: 'style-loader'
             })
         }, {
