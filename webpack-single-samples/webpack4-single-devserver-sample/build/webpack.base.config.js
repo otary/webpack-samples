@@ -6,11 +6,15 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
+const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 
 const rootPath = path.resolve(process.cwd());
 const srcPath = path.resolve(rootPath, 'src');
 const distPath = path.resolve(rootPath, 'dist');
 const assetsPath = path.join(srcPath, 'assets');
+const distDllPath = path.join(distPath, 'dll');
 
 module.exports = {
     mode: 'development',
@@ -41,17 +45,7 @@ module.exports = {
                 options: {
                     // hmr: process.env.NODE_ENV === 'development',
                 },
-            }, 'css-loader', {
-                loader: 'postcss-loader',
-                options: {
-                    plugins: [
-                        require('postcss-import')(),
-                        require('autoprefixer')({
-                            browsers: ['last 30 versions', "> 2%", "Firefox >= 10", "ie 6-11"]
-                        })
-                    ]
-                }
-            }, 'sass-loader']
+            }, 'css-loader', 'postcss-loader', 'sass-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -100,36 +94,9 @@ module.exports = {
         alias: {
             '@': srcPath,
             '@assets': assetsPath,
-            '@scss': path.join(assetsPath, 'scss'),
-            'vue$': 'vue/dist/vue.common.js'
+            '@scss': path.join(assetsPath, 'scss')
         },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
-    },
-
-    optimization: {
-        splitChunks: {
-            chunks: 'all',
-            minSize: 300,
-            maxSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 5,
-            maxInitialRequests: 3,
-            automaticNameDelimiter: '~',
-            name: true,
-            cacheGroups: {
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                },
-                vendor: {
-                    name: "vendor",
-                    test: /[\\/]node_modules[\\/]/,
-                    chunks: "all",
-                    minChunks: 2
-                }
-            }
-        }
     },
     plugins: [
         new webpack.ProvidePlugin({
@@ -138,13 +105,18 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/template.html',
             filename: 'index.html',
-            chunks: 'all',
+            //chunks: 'all',
             favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
         new DllReferencePlugin({
-            manifest: require(path.join(distDllPath, 'vendor_dll.manifest.json'))
+            context: __dirname,
+            manifest: require(path.join(distDllPath, 'vendor.manifest.json'))
         }),
-        new CleanWebpackPlugin(),
+        new DllReferencePlugin({
+            context: __dirname,
+            manifest: require(path.join(distDllPath, 'vue.manifest.json'))
+        }),
+        //new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
             filename: `assets/css/[name]_[contenthash:8].css`,
@@ -157,7 +129,7 @@ module.exports = {
                     // 最紧凑的输出
                     beautify: false,
                     // 删除所有注释
-                    comments: false,
+                    comments: false
                 },
                 compress: {
                     // 删除所有console语句，可以兼容IE浏览器
@@ -169,9 +141,18 @@ module.exports = {
         }),
         new webpack.HotModuleReplacementPlugin(),
         // 压缩css插件配置
-        new OptimizeCssAssetsWebpackPlugin()
+        new OptimizeCssAssetsWebpackPlugin(),
+        // 添加资源文件
+        new HtmlWebpackIncludeAssetsPlugin({
+            assets: ['dll/vendor.dll.js', 'dll/vendor.dll.css', 'dll/vue.dll.js'],
+            append: false
+        }),
+       /* new BundleAnalyzerPlugin({
+            analyzerMode: 'static'
+        }),*/
     ],
     devServer: {
         contentBase: srcPath
     }
 }
+

@@ -10,8 +10,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "test"
+    "url": "git@github.com:otary/webpack-samples.git"
   },
+  "homepage": "https://github.com/otary/webpack-samples",
   "author": "chenzw",
   "license": "MIT",
   "devDependencies": {

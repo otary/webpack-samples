@@ -6,6 +6,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const {AutoWebPlugin} = require('web-webpack-plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+
 const rootPath = path.resolve(process.cwd());
 const pagePath = './src/pages';
 const srcPath = path.resolve(rootPath, 'src');
@@ -90,15 +91,14 @@ module.exports = {
                 exclude: /node_modules/
             }]
     },
-    devtool: 'source-map',
+    devtool: '#source-map',
     resolve: {
         // 寻找模块的根目录，默认以node_modules为根目录
         modules: ['node_modules'],
         alias: {
             '@': srcPath,
             '@assets': assetsPath,
-            '@scss': path.join(assetsPath, 'scss'),
-            'vue$': 'vue/dist/vue.common.js'
+            '@scss': path.join(assetsPath, 'scss')
         },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },

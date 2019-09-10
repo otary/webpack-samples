@@ -10,16 +10,15 @@ const DllPlugin = webpack.DllPlugin;
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const dllLibraryName = '_dll_[name]';
-const distPath = path.resolve(process.cwd(), 'dist');
+const rootPath = process.cwd();
+const distPath = path.resolve(rootPath, 'dist');
 const distDllPath = path.join(distPath, 'dll');
 
 
 module.exports = {
     entry: {
-        vendor_dll: ['jquery', 'bootstrap', 'bootstrap/dist/css/bootstrap.css',
-            'axios'
-            /*, 'font-awesome/css/font-awesome.css'*/
-        ]
+        vue: ['vue', 'vuex'],
+        vendor: ['element-ui', 'axios', 'element-ui/lib/theme-chalk/index.css', 'font-awesome/css/font-awesome.css']
     },
     output: {
         filename: '[name].dll.js',
@@ -48,7 +47,7 @@ module.exports = {
                 use: [{
                     loader: 'url-loader',
                     options: {
-                        name: 'assets/fonts/[name].[hash:8].[ext]',
+                        name: 'fonts/[name].[hash:8].[ext]',
                         limit: 10000
                     }
                 }]
@@ -57,6 +56,7 @@ module.exports = {
                 use: [{
                     loader: 'url-loader',
                     options: {
+                        name: 'imgs/[name].[hash:8].[ext]',
                         limit: 10000,
                         mimeType: 'image/svg+xml'
                     }
@@ -71,6 +71,7 @@ module.exports = {
             ignoreOrder: false
         }),
         new DllPlugin({
+            context: __dirname,
             name: dllLibraryName,
             path: path.join(distDllPath, '[name].manifest.json')
         })
