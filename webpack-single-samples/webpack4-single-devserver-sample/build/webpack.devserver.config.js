@@ -3,18 +3,21 @@
  *
  * @author chenzw
  */
-
+const path = require('path');
 const baseConfig = require('./webpack.base.config');
 const merge = require('webpack-merge');
 
-const srcPath = './src';
+const rootPath = path.resolve(process.cwd());
+const srcPath = path.resolve(rootPath, 'src');
+const distPath = path.resolve(rootPath, 'dist');
+
 
 const devServerConfig = {
 
     devServer: {
 
         // 指定根目录
-        contentBase: srcPath,
+        contentBase: distPath,
 
         // 指定端口
         port: 9999,

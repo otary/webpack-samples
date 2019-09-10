@@ -16,6 +16,7 @@
   "author": "chenzw",
   "license": "MIT",
   "devDependencies": {
+    "autodll-webpack-plugin": "^0.4.2",
     "autoprefixer-loader": "^3.2.0",
     "axios": "^0.19.0",
     "babel": "^6.23.0",

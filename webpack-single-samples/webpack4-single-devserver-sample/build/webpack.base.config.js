@@ -9,6 +9,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const AutoDllPlugin = require('autodll-webpack-plugin');
+
 
 const rootPath = path.resolve(process.cwd());
 const srcPath = path.resolve(rootPath, 'src');
@@ -46,6 +48,9 @@ module.exports = {
                     // hmr: process.env.NODE_ENV === 'development',
                 },
             }, 'css-loader', 'postcss-loader', 'sass-loader']
+        }, {
+            test: /\.styl/,
+            use: ['style-loader', 'css-loader', 'postcss-loader', 'stylus-loader']
         }, {
             test: /\.(js|jsx)$/,
             use: [{
@@ -108,13 +113,32 @@ module.exports = {
             //chunks: 'all',
             favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
-        new DllReferencePlugin({
-            context: __dirname,
-            manifest: require(path.join(distDllPath, 'vendor.manifest.json'))
-        }),
-        new DllReferencePlugin({
-            context: __dirname,
-            manifest: require(path.join(distDllPath, 'vue.manifest.json'))
+        /* new DllReferencePlugin({
+             context: __dirname,
+             manifest: require(path.join(distDllPath, 'vendor.manifest.json'))
+         }),
+         new DllReferencePlugin({
+             context: __dirname,
+             manifest: require(path.join(distDllPath, 'vue.manifest.json'))
+         }),*/
+
+        new AutoDllPlugin({
+            inject: true,
+            filename: '[name]_[hash].js',
+            inherit: true,
+            entry: {
+                vue: ['vue', 'vuex'],
+                vendor: ['element-ui', 'axios', 'element-ui/lib/theme-chalk/index.css']
+            },
+            plugins: [
+                /*new TerserPlugin({
+                    cache: true,
+                    parallel: true
+                }),*/
+                new MiniCssExtractPlugin({
+                    filename: '[name].css'
+                })
+            ]
         }),
         //new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
@@ -143,13 +167,13 @@ module.exports = {
         // 压缩css插件配置
         new OptimizeCssAssetsWebpackPlugin(),
         // 添加资源文件
-        new HtmlWebpackIncludeAssetsPlugin({
-            assets: ['dll/vendor.dll.js', 'dll/vendor.dll.css', 'dll/vue.dll.js'],
-            append: false
-        }),
-       /* new BundleAnalyzerPlugin({
-            analyzerMode: 'static'
-        }),*/
+        /* new HtmlWebpackIncludeAssetsPlugin({
+             assets: ['dll/vendor.dll.js', 'dll/vendor.dll.css', 'dll/vue.dll.js'],
+             append: false
+         }),*/
+        /* new BundleAnalyzerPlugin({
+             analyzerMode: 'static'
+         }),*/
     ],
     devServer: {
         contentBase: srcPath
