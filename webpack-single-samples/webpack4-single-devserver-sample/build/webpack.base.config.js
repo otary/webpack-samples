@@ -132,6 +132,9 @@ module.exports = {
         }
     },
     plugins: [
+        new webpack.ProvidePlugin({
+            Vue: ['vue']
+        }),
         new HtmlWebpackPlugin({
             template: 'src/template.html',
             filename: 'index.html',

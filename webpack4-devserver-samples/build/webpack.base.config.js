@@ -39,65 +39,58 @@ module.exports = {
         publicPath: '/'
     },
     module: {
-        rules: [{
-            test: require.resolve('jquery'), // require.resolve 用来获取模块的绝对路径
-            use: [{
-                loader: 'expose-loader',
-                options: 'jQuery'
+        rules: [
+            {
+                test: /\.(sa|sc|c)ss$/,
+                use: [{
+                    loader: MiniCssExtractPlugin.loader,
+                    options: {
+                        // hmr: process.env.NODE_ENV === 'development',
+                    },
+                }, 'css-loader', 'postcss-loader', 'sass-loader']
             }, {
-                loader: 'expose-loader',
-                options: '$'
-            }]
-        }, {
-            test: /\.(sa|sc|c)ss$/,
-            use: [{
-                loader: MiniCssExtractPlugin.loader,
-                options: {
-                    // hmr: process.env.NODE_ENV === 'development',
-                },
-            }, 'css-loader', 'postcss-loader', 'sass-loader']
-        }, {
-            test: /\.(js|jsx)$/,
-            use: [{
-                loader: 'babel-loader'
-            }],
+                test: /\.(js|jsx)$/,
+                use: [{
+                    loader: 'babel-loader'
+                }],
 
-            // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
-            exclude: /node_modules/
-        }, {
-            test: /\.(gif|png|jpe?g|pdf)$/,
-            use: ['file-loader']
-        }, {
-            test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
-            loader: 'url-loader',
-            options: {
-                limit: 10000,
-                name: 'assets/media/[name].[hash:7].[ext]'
-            }
-        }, {
-            test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
-            use: [{
-                loader: 'url-loader',
-                options: {
-                    name: 'assets/fonts/[name].[hash:8].[ext]',
-                    limit: 10000
-                }
-            }]
-        }, {
-            test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-            use: [{
+                // 排除 node_modules 目录下的文件（node_modules 目录下的文件都是采用的 ES5 语法，没必要再通过 Babel 去转换）
+                exclude: /node_modules/
+            }, {
+                test: /\.(gif|png|jpe?g|pdf)$/,
+                use: ['file-loader']
+            }, {
+                test: /\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/,
                 loader: 'url-loader',
                 options: {
                     limit: 10000,
-                    mimeType: 'image/svg+xml'
+                    name: 'assets/media/[name].[hash:7].[ext]'
                 }
+            }, {
+                test: /\.(woff2?|eot|ttf|otf)(\?.*)?$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        name: 'assets/fonts/[name].[hash:8].[ext]',
+                        limit: 10000
+                    }
+                }]
+            }, {
+                test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                use: [{
+                    loader: 'url-loader',
+                    options: {
+                        limit: 10000,
+                        mimeType: 'image/svg+xml'
+                    }
+                }]
+            }, {
+                test: /\.vue$/,
+                use: ['vue-loader'],
+                exclude: /node_modules/
             }]
-        }, {
-            test: /\.vue$/,
-            use: ['vue-loader'],
-            exclude: /node_modules/
-        }]
     },
+    devtool: 'source-map',
     resolve: {
         // 寻找模块的根目录，默认以node_modules为根目录
         modules: ['node_modules'],
@@ -144,7 +137,7 @@ module.exports = {
         new webpack.ProvidePlugin({
             'window.jQuery': 'jquery',
             $: 'jquery',
-            Vue: ['vue/dist/vue.esm.js', 'default']
+            Vue: ['vue']
         }),
         autoWebPlugin,
         // new CleanWebpackPlugin(),
