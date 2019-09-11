@@ -134,6 +134,7 @@ module.exports = {
             filename: `assets/[name]/css/[name]_[hash:8].css`
         }),
         new DllReferencePlugin({
+            context: __dirname,
             manifest: require(path.join(distDllPath, 'vendor_dll.manifest.json'))
         }),
         // 使用 HappyPack 加速构建

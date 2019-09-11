@@ -12,17 +12,19 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const dllLibraryName = '_dll_[name]';
 const rootPath = process.cwd();
 const distPath = path.resolve(rootPath, 'dist');
+const srcPath = path.resolve(rootPath, 'src');
+const srcDllPath = path.resolve(srcPath, 'dll');
 const distDllPath = path.join(distPath, 'dll');
 
 
 module.exports = {
     entry: {
-        vue: ['vue', 'vuex'],
+        vue: ['vue', 'vuex', 'vue-router'],
         vendor: ['element-ui', 'axios', 'element-ui/lib/theme-chalk/index.css', 'font-awesome/css/font-awesome.css']
     },
     output: {
         filename: '[name].dll.js',
-        path: distDllPath,
+        path: srcDllPath,
         library: dllLibraryName
     },
     module: {
@@ -73,7 +75,7 @@ module.exports = {
         new DllPlugin({
             context: __dirname,
             name: dllLibraryName,
-            path: path.join(distDllPath, '[name].manifest.json')
+            path: path.join(srcDllPath, '[name].manifest.json')
         })
     ]
 }

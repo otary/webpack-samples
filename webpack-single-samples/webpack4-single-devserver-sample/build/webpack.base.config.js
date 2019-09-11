@@ -10,6 +10,7 @@ const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
 const AutoDllPlugin = require('autodll-webpack-plugin');
+const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 
 
 const rootPath = path.resolve(process.cwd());
@@ -17,6 +18,7 @@ const srcPath = path.resolve(rootPath, 'src');
 const distPath = path.resolve(rootPath, 'dist');
 const assetsPath = path.join(srcPath, 'assets');
 const distDllPath = path.join(distPath, 'dll');
+const srcDllPath = path.resolve(srcPath, 'dll');
 
 module.exports = {
     mode: 'development',
@@ -103,6 +105,7 @@ module.exports = {
         },
         extensions: ['.js', '.vue', '.json', '.css', '.scss']
     },
+    profile: true,
     plugins: [
         new webpack.ProvidePlugin({
             Vue: ['vue']
@@ -110,36 +113,28 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/template.html',
             filename: 'index.html',
-            //chunks: 'all',
+            // chunks: 'all',
+            // chunks: ['vendor'],
             favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
-        /* new DllReferencePlugin({
-             context: __dirname,
-             manifest: require(path.join(distDllPath, 'vendor.manifest.json'))
-         }),
-         new DllReferencePlugin({
-             context: __dirname,
-             manifest: require(path.join(distDllPath, 'vue.manifest.json'))
-         }),*/
-
-        new AutoDllPlugin({
+        new DllReferencePlugin({
+            context: __dirname,
+            manifest: require(path.join(srcDllPath, 'vendor.manifest.json'))
+        }),
+        new DllReferencePlugin({
+            context: __dirname,
+            manifest: require(path.join(srcDllPath, 'vue.manifest.json'))
+        }),
+        /*new AutoDllPlugin({
             inject: true,
-            filename: '[name]_[hash].js',
-            inherit: true,
+            debug: true,
+            filename: '[name]_[hash].dll.js',
+            path: path.relative(distPath, distDllPath),
             entry: {
                 vue: ['vue', 'vuex'],
-                vendor: ['element-ui', 'axios', 'element-ui/lib/theme-chalk/index.css']
-            },
-            plugins: [
-                /*new TerserPlugin({
-                    cache: true,
-                    parallel: true
-                }),*/
-                new MiniCssExtractPlugin({
-                    filename: '[name].css'
-                })
-            ]
-        }),
+                vendor: ['element-ui', 'axios']
+            }
+        }),*/
         //new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
@@ -167,16 +162,21 @@ module.exports = {
         // 压缩css插件配置
         new OptimizeCssAssetsWebpackPlugin(),
         // 添加资源文件
-        /* new HtmlWebpackIncludeAssetsPlugin({
-             assets: ['dll/vendor.dll.js', 'dll/vendor.dll.css', 'dll/vue.dll.js'],
-             append: false
-         }),*/
+        /*new HtmlWebpackIncludeAssetsPlugin({
+            assets: ['dll/vendor.dll.js', 'dll/vendor.dll.css', 'dll/vue.dll.js'],
+            append: false
+        }),*/
         /* new BundleAnalyzerPlugin({
              analyzerMode: 'static'
          }),*/
+        new AddAssetHtmlPlugin([{
+            filepath: path.join(srcDllPath, '*.dll.*'),
+            outputPath: 'dll',
+            publicPath: '/dll'
+        }]),
     ],
     devServer: {
-        contentBase: srcPath
+        contentBase: distPath
     }
 }
 

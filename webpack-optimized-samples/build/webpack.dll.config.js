@@ -10,7 +10,8 @@ const DllPlugin = webpack.DllPlugin;
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const dllLibraryName = '_dll_[name]';
-const distPath = path.resolve(process.cwd(), 'dist');
+const rootPath = process.cwd();
+const distPath = path.resolve(rootPath, 'dist');
 const distDllPath = path.join(distPath, 'dll');
 
 
@@ -46,7 +47,7 @@ module.exports = {
                 use: [{
                     loader: 'url-loader',
                     options: {
-                        name: 'assets/fonts/[name].[hash:8].[ext]',
+                        name: 'fonts/[name].[hash:8].[ext]',
                         limit: 10000
                     }
                 }]
@@ -67,6 +68,7 @@ module.exports = {
             filename: '[name].dll.css'
         }),
         new DllPlugin({
+ 	    context: __dirname,
             name: dllLibraryName,
             path: path.join(distDllPath, '[name].manifest.json')
         })
