@@ -117,11 +117,11 @@ module.exports = {
             // chunks: ['vendor'],
             favicon: path.join(assetsPath, 'img/favicon.ico')
         }),
-        new DllReferencePlugin({
+        new webpack.DllReferencePlugin({
             context: __dirname,
             manifest: require(path.join(srcDllPath, 'vendor.manifest.json'))
         }),
-        new DllReferencePlugin({
+        new webpack.DllReferencePlugin({
             context: __dirname,
             manifest: require(path.join(srcDllPath, 'vue.manifest.json'))
         }),
@@ -170,9 +170,14 @@ module.exports = {
              analyzerMode: 'static'
          }),*/
         new AddAssetHtmlPlugin([{
-            filepath: path.join(srcDllPath, '*.dll.*'),
+            filepath: path.join(srcDllPath, '*.dll.js'),
             outputPath: 'dll',
             publicPath: '/dll'
+        }, {
+            filepath: path.join(srcDllPath, '*.dll.css'),
+            outputPath: 'dll',
+            publicPath: '/dll',
+            typeOfAsset: 'css'
         }]),
     ],
     devServer: {
