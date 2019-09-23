@@ -6,10 +6,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const DllReferencePlugin = require('webpack/lib/DllReferencePlugin');
-const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
-const AutoDllPlugin = require('autodll-webpack-plugin');
 const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin');
 
 
@@ -125,16 +122,6 @@ module.exports = {
             context: __dirname,
             manifest: require(path.join(srcDllPath, 'vue.manifest.json'))
         }),
-        /*new AutoDllPlugin({
-            inject: true,
-            debug: true,
-            filename: '[name]_[hash].dll.js',
-            path: path.relative(distPath, distDllPath),
-            entry: {
-                vue: ['vue', 'vuex'],
-                vendor: ['element-ui', 'axios']
-            }
-        }),*/
         //new CleanWebpackPlugin(),
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
