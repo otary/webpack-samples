@@ -111,7 +111,7 @@ module.exports = {
             Vue: ['vue']
         }),
         new HtmlWebpackPlugin({
-            template: 'src/template.html',
+            template: 'src/index.html',
             filename: 'index.html',
             // chunks: 'all',
             // chunks: ['vendor'],
